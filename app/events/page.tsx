@@ -18,11 +18,28 @@ const MOCK_EVENTS = [
   { id: "6", title: "Street Basketball 3x3", category: "Sports", prize: "$1,000", date: "Mar 10, 2027", teams: 16, image: "https://picsum.photos/seed/16/600/400" },
 ];
 
+import { gsap } from "gsap";
+import { useEffect, useRef } from "react";
+
 export default function EventsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".event-card", {
+        y: 60,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "back.out(1.7)"
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, [activeCategory]);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main ref={containerRef} className="min-h-screen bg-white">
       <Navbar />
       
       {/* Header Section */}
@@ -80,7 +97,7 @@ export default function EventsPage() {
         <div className="flex-grow">
           <div className="grid sm:grid-cols-2 gap-8">
             {MOCK_EVENTS.map(ev => (
-              <Link href={`/events/${ev.id}`} key={ev.id} className="group">
+              <Link href={`/events/${ev.id}`} key={ev.id} className="event-card group">
                 <Card className="p-0 overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-300">
                   <div className="h-48 border-b-3 border-black overflow-hidden relative">
                     <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />

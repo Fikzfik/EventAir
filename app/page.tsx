@@ -3,11 +3,13 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Navbar } from "@/components/ui/Navbar";
 import { Bracket, Round } from "@/components/features/Bracket";
-import { EventCardSkeleton } from "@/components/ui/States";
+import { HeroCharacter } from "@/components/ui/HeroCharacter";
 import {
   Trophy,
   Calendar,
@@ -59,26 +61,55 @@ const STATS = [
 
 /* ── Hero ───────────────────────────────────────── */
 const Hero = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const subRef     = useRef<HTMLParagraphElement>(null);
   const ctaRef     = useRef<HTMLDivElement>(null);
   const badgeRef   = useRef<HTMLDivElement>(null);
-  const cardRef    = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.from(badgeRef.current,   { y: -20, opacity: 0, duration: 0.5 })
-      .from(headingRef.current?.children ?? [], { y: 60, opacity: 0, stagger: 0.12, duration: 0.7 }, "-=0.2")
-      .from(subRef.current,     { x: -30, opacity: 0, duration: 0.5 }, "-=0.3")
-      .from(ctaRef.current?.children ?? [], { y: 20, opacity: 0, stagger: 0.1, duration: 0.4 }, "-=0.2")
-      .from(cardRef.current,    { x: 60, opacity: 0, duration: 0.7, ease: "back.out(1.3)" }, "-=0.6");
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "back.out(1.7)" } });
+      
+      // Grid fade in
+      gsap.fromTo(".hero-grid", { opacity: 0 }, { opacity: 0.07, duration: 1.5 });
+
+      tl.fromTo(badgeRef.current, 
+        { y: -50, opacity: 0, rotate: -5 }, 
+        { y: 0, opacity: 1, rotate: 0, duration: 0.8 }
+      )
+      .fromTo(headingRef.current?.children ?? [], 
+        { y: 120, opacity: 0, rotateX: -45, transformOrigin: "top left" }, 
+        { y: 0, opacity: 1, rotateX: 0, stagger: 0.15, duration: 1, ease: "back.out(1.4)" }, "-=0.4"
+      )
+      .fromTo(subRef.current, 
+        { x: -50, opacity: 0 }, 
+        { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "-=0.6"
+      )
+      .fromTo(ctaRef.current?.children ?? [], 
+        { scale: 0.5, opacity: 0, y: 30 }, 
+        { scale: 1, opacity: 1, y: 0, stagger: 0.1, duration: 0.6 }, "-=0.4"
+      )
+      // Backdrop boxes animation
+      .fromTo(".hero-box-1", 
+        { scale: 0, rotate: 0, opacity: 0 }, 
+        { scale: 1, rotate: 6, opacity: 1, duration: 0.8 }, "-=0.8"
+      )
+      .fromTo(".hero-box-2", 
+        { scale: 0, rotate: 0, opacity: 0 }, 
+        { scale: 1, rotate: -3, opacity: 1, duration: 0.8 }, "-=0.6"
+      );
+
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="relative overflow-hidden border-b-3 border-black bg-neo-cyan min-h-[90vh] flex items-center">
+    <section ref={containerRef} className="relative overflow-hidden border-b-3 border-black bg-neo-cyan min-h-[90vh] flex items-center">
       {/* Decorative grid */}
       <div
-        className="absolute inset-0 opacity-[0.07] pointer-events-none"
+        className="hero-grid absolute inset-0 opacity-[0.07] pointer-events-none"
         style={{ backgroundImage: "repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 1px,transparent 40px)" }}
       />
 
@@ -87,57 +118,41 @@ const Hero = () => {
         <div className="relative z-20">
           <div ref={badgeRef} className="inline-flex items-center gap-2 bg-black text-white px-4 py-1.5 border-2 border-black shadow-brutal-sm font-black uppercase text-xs tracking-widest mb-8">
             <Zap className="w-3 h-3 fill-neo-yellow text-neo-yellow" />
-            Top Tier Tournament Platform
+            Discover. Join. Win.
           </div>
 
-          <h1 ref={headingRef} className="text-[clamp(3.5rem,8vw,7rem)] font-black uppercase leading-[0.9] tracking-tighter mb-8">
-            <span className="block">Play.</span>
-            <span className="block">Compete.</span>
-            <span className="block bg-neo-yellow px-3 border-4 border-black shadow-brutal w-fit mt-1">Conquer.</span>
+          <h1 ref={headingRef} className="text-[clamp(3rem,7vw,6rem)] font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            <span className="block">Discover</span>
+            <span className="block">Elite</span>
+            <span className="block bg-neo-yellow px-3 border-4 border-black shadow-brutal w-fit mt-1 text-black">Events.</span>
           </h1>
 
           <p ref={subRef} className="text-xl font-bold mb-10 max-w-md border-l-4 border-black pl-5 leading-relaxed">
-            Manage tournaments with precision. Real-time brackets, role-based dashboards, and live chat — all in one platform.
+            The central hub for student competitions. Find events, manage registrations, and showcase your achievements.
           </p>
 
           <div ref={ctaRef} className="flex flex-wrap gap-4">
-            <Button size="lg" className="flex items-center gap-2 group">
-              Get Started
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </Button>
             <Link href="/events">
-              <Button variant="outline" size="lg">Browse Events</Button>
+              <Button size="lg" className="flex items-center gap-2 group">
+                Explore Now
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button variant="outline" size="lg">How it Works</Button>
             </Link>
           </div>
         </div>
 
-        {/* Right — event card teaser */}
-        <div ref={cardRef} className="relative hidden lg:block">
-          <div className="absolute inset-0 bg-neo-pink border-3 border-black translate-x-3 translate-y-3 -z-10" />
-          <Card className="bg-white p-8 border-4">
-            <div className="flex justify-between items-start mb-8">
-              <div className="bg-neo-yellow border-3 border-black p-3 shadow-brutal-sm">
-                <Trophy className="w-8 h-8" strokeWidth={2.5} />
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] font-black uppercase tracking-widest text-black/50">Featured Event</p>
-                <p className="text-xl font-black uppercase">Valorant Pro Series</p>
-              </div>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between items-center bg-neo-green/10 px-4 py-3 border-3 border-black">
-                <span className="font-bold flex items-center gap-2 text-sm"><Calendar className="w-4 h-4" />OCT 24, 2026</span>
-                <span className="bg-neo-green px-3 py-0.5 font-black text-xs border-2 border-black uppercase">Open</span>
-              </div>
-              <div className="flex justify-between items-center bg-neo-yellow/10 px-4 py-3 border-3 border-black">
-                <span className="font-bold flex items-center gap-2 text-sm"><Users className="w-4 h-4" />128 Teams</span>
-                <span className="font-black text-sm">$10,000 Pool</span>
-              </div>
-            </div>
-
-            <Button className="w-full justify-center" variant="primary">Register Your Team</Button>
-          </Card>
+        {/* Right — Animated Neo-Brutalist Character */}
+        <div className="relative hidden lg:flex items-end justify-center">
+          {/* Decorative backdrop boxes */}
+          <div className="hero-box-1 absolute bottom-0 right-8 w-64 h-64 bg-neo-pink border-4 border-black" style={{ transform: 'rotate(6deg)' }} />
+          <div className="hero-box-2 absolute bottom-4 right-4 w-64 h-64 bg-neo-yellow border-4 border-black" style={{ transform: 'rotate(-3deg)' }} />
+          {/* Character sits on top */}
+          <div className="relative z-10">
+            <HeroCharacter />
+          </div>
         </div>
       </div>
     </section>
@@ -145,18 +160,39 @@ const Hero = () => {
 };
 
 /* ── Stats Bar ──────────────────────────────────── */
-const StatsBar = () => (
-  <section className="border-b-3 border-black bg-black text-white">
-    <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 divide-x-0 md:divide-x-3 divide-white/20">
-      {STATS.map((s) => (
-        <div key={s.label} className="text-center py-4">
-          <p className="text-3xl font-black text-neo-yellow">{s.value}</p>
-          <p className="text-xs font-bold uppercase tracking-widest text-white/60 mt-1">{s.label}</p>
-        </div>
-      ))}
-    </div>
-  </section>
-);
+const StatsBar = () => {
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".stat-item", {
+        scrollTrigger: {
+          trigger: barRef.current,
+          start: "top 90%",
+        },
+        y: 40,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "back.out(1.7)"
+      });
+    }, barRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={barRef} className="border-b-3 border-black bg-black text-white">
+      <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 divide-x-0 md:divide-x-3 divide-white/20">
+        {STATS.map((s) => (
+          <div key={s.label} className="stat-item text-center py-4">
+            <p className="text-3xl font-black text-neo-yellow">{s.value}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-white/60 mt-1">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 /* ── Bracket Showcase ───────────────────────────── */
 const BracketShowcase = () => (
@@ -191,64 +227,86 @@ const BracketShowcase = () => (
 );
 
 /* ── Events Grid ────────────────────────────────── */
-const EventsGrid = () => (
-  <section className="py-24 border-b-3 border-black bg-neo-yellow">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
-        <div>
-          <span className="text-xs font-black uppercase tracking-[0.25em] text-black/40 block mb-3">// Upcoming</span>
-          <h2 className="text-5xl font-black uppercase tracking-tighter">
-            Hot<br /><span className="underline decoration-8 decoration-black">Events</span>
-          </h2>
-        </div>
-        <Link href="/events">
-          <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap">
-            All Events <ArrowRight className="w-4 h-4" />
-          </Button>
-        </Link>
-      </div>
+const EventsGrid = () => {
+  const gridRef = useRef<HTMLDivElement>(null);
 
-      <div className="grid md:grid-cols-3 gap-8">
-        {MOCK_EVENTS.map((ev) => (
-          <Link href={`/events/${ev.id}`} key={ev.id} className="group block">
-            <div className="border-3 border-black shadow-brutal bg-white group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-200">
-              {/* Image */}
-              <div className="h-52 border-b-3 border-black overflow-hidden relative bg-black">
-                <img
-                  src={`https://picsum.photos/seed/${ev.seed}/600/400`}
-                  alt={ev.title}
-                  className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <span className="bg-white text-black px-2 py-0.5 border-2 border-black font-black text-[10px] uppercase">
-                    {ev.status}
-                  </span>
-                </div>
-              </div>
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".event-card-anim", {
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 80%",
+        },
+        y: 60,
+        opacity: 0,
+        scale: 0.95,
+        stagger: 0.2,
+        duration: 0.8,
+        ease: "back.out(1.5)"
+      });
+    }, gridRef);
+    return () => ctx.revert();
+  }, []);
 
-              {/* Body */}
-              <div className="p-5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-black/50 mb-2">{ev.category}</p>
-                <h3 className="text-xl font-black uppercase mb-5 leading-tight">{ev.title}</h3>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-xs text-black/50 font-bold uppercase">Prize</p>
-                    <p className="font-black text-lg">{ev.prize}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-black/50 font-bold uppercase">Teams</p>
-                    <p className="font-black text-lg">{ev.teams}</p>
-                  </div>
-                  <Button size="sm">Join</Button>
-                </div>
-              </div>
-            </div>
+  return (
+    <section ref={gridRef} className="py-24 border-b-3 border-black bg-neo-yellow">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+          <div>
+            <span className="text-xs font-black uppercase tracking-[0.25em] text-black/40 block mb-3">// Upcoming</span>
+            <h2 className="text-5xl font-black uppercase tracking-tighter">
+              Hot<br /><span className="underline decoration-8 decoration-black">Events</span>
+            </h2>
+          </div>
+          <Link href="/events">
+            <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap">
+              All Events <ArrowRight className="w-4 h-4" />
+            </Button>
           </Link>
-        ))}
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {MOCK_EVENTS.map((ev) => (
+            <Link href={`/events/${ev.id}`} key={ev.id} className="event-card-anim group block">
+              <div className="border-3 border-black shadow-brutal bg-white group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-200">
+                {/* Image */}
+                <div className="h-52 border-b-3 border-black overflow-hidden relative bg-black">
+                  <img
+                    src={`https://picsum.photos/seed/${ev.seed}/600/400`}
+                    alt={ev.title}
+                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 flex gap-2">
+                    <span className="bg-white text-black px-2 py-0.5 border-2 border-black font-black text-[10px] uppercase">
+                      {ev.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div className="p-5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-black/50 mb-2">{ev.category}</p>
+                  <h3 className="text-xl font-black uppercase mb-5 leading-tight">{ev.title}</h3>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-xs text-black/50 font-bold uppercase">Prize</p>
+                      <p className="font-black text-lg">{ev.prize}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-black/50 font-bold uppercase">Teams</p>
+                      <p className="font-black text-lg">{ev.teams}</p>
+                    </div>
+                    <Button size="sm">Join</Button>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 /* ── Feature Cards ─────────────────────────────── */
 const FeatureCards = () => {

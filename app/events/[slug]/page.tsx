@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+
 import { Navbar } from "@/components/ui/Navbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -32,50 +35,89 @@ const MOCK_BRACKET: Round[] = [
 ];
 
 export default function EventDetailPage() {
+  const charRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (charRef.current) {
+        gsap.to(charRef.current, {
+          y: -10,
+          duration: 1.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut"
+        });
+      }
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <main className="min-h-screen bg-white">
+    <main ref={containerRef} className="min-h-screen bg-white">
       <Navbar />
 
       {/* Event Hero */}
-      <section className="relative h-[400px] border-b-3 border-black overflow-hidden bg-black">
-        <img 
-          src="https://picsum.photos/seed/valorant/1200/600" 
-          alt="Event Cover" 
-          className="w-full h-full object-cover opacity-60"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+      <section className="relative h-[450px] border-b-3 border-black overflow-hidden bg-black">
+        <div className="relative w-full h-full">
+          <img 
+            src="https://picsum.photos/seed/student-hero/1200/600" 
+            alt="Event Cover" 
+            className="w-full h-full object-cover opacity-60"
+          />
+          {/* Character sits on the bottom edge */}
+          <div className="absolute bottom-0 right-10 md:right-32 w-64 h-64 z-10 hidden md:block">
+             <img 
+                ref={charRef}
+                src="https://api.dicebear.com/7.x/pixel-art/svg?seed=EventAir" 
+                alt="Mascot" 
+                className="w-full h-full drop-shadow-[0_0_20px_rgba(255,0,255,0.5)]"
+             />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-8">
-            <div className="text-white">
-              <div className="inline-block bg-neo-pink text-black px-4 py-1 border-2 border-black font-black uppercase text-sm mb-4">
-                Esports • FPS
+          <div className="max-w-7xl mx-auto">
+            <div className="text-white max-w-3xl">
+              <div className="inline-flex items-center gap-2 bg-neo-pink text-black px-4 py-1 border-2 border-black font-black uppercase text-xs mb-4">
+                <Trophy className="w-3 h-3" /> Esports • FPS
               </div>
-              <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-4">
-                Valorant Pro Series
+              <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.85] mb-6">
+                Valorant <span className="text-neo-cyan">Pro Series</span>
               </h1>
-              <div className="flex flex-wrap gap-6 font-bold">
-                <span className="flex items-center gap-2"><Calendar className="w-5 h-5 text-neo-pink" /> Oct 24 - 26, 2026</span>
-                <span className="flex items-center gap-2"><MapPin className="w-5 h-5 text-neo-pink" /> Jakarta, Indonesia (Offline)</span>
+              <div className="flex flex-wrap gap-8 font-black uppercase text-xs tracking-widest opacity-80">
+                <span className="flex items-center gap-2 border-b-2 border-neo-pink pb-1"><Calendar className="w-4 h-4" /> Oct 24 - 26, 2026</span>
+                <span className="flex items-center gap-2 border-b-2 border-neo-cyan pb-1"><MapPin className="w-4 h-4" /> Jakarta Hub</span>
+                <span className="flex items-center gap-2 border-b-2 border-neo-green pb-1"><Users className="w-4 h-4" /> 128 Teams Max</span>
               </div>
-            </div>
-            <div className="flex gap-4">
-              <Button size="lg" className="shadow-[6px_6px_0px_0px_rgba(0,255,255,1)]">Register Now</Button>
-              <Button variant="outline" className="bg-white"><Share2 className="w-5 h-5" /></Button>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Sticky Sub-Nav */}
+      <nav className="sticky top-[73px] z-40 bg-white border-b-3 border-black py-4 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-6 flex gap-8 whitespace-nowrap">
+          {["Overview", "Bracket", "Schedule", "Rules", "Participants"].map((item) => (
+            <a key={item} href={`#${item.toLowerCase()}`} className="text-xs font-black uppercase tracking-widest hover:text-neo-pink transition-colors">
+              {item}
+            </a>
+          ))}
+        </div>
+      </nav>
+
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-6 py-12 grid lg:grid-cols-3 gap-16">
         {/* Left Column: Info, Rules, Schedule */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-20">
+          
           {/* Info Card */}
-          <section>
-            <h2 className="text-3xl font-black uppercase mb-6 flex items-center gap-3">
-              <Info className="w-8 h-8 text-neo-cyan" strokeWidth={3} /> Description
+          <section id="overview">
+            <h2 className="text-4xl font-black uppercase mb-8 flex items-center gap-4">
+              <span className="w-12 h-12 bg-neo-cyan border-3 border-black flex items-center justify-center italic text-xl">1</span>
+              Description
             </h2>
-            <Card variant="white" className="p-8 text-lg font-bold leading-relaxed border-2">
+            <Card variant="white" className="p-10 text-xl font-bold leading-relaxed border-3 shadow-brutal hover:shadow-none transition-all">
               The Valorant Pro Series is the biggest community tournament of the year. 
               Join 128 teams from across the region to compete for a massive $10,000 prize pool 
               and the title of the Ultimate Champion. This event features professional production, 
@@ -83,31 +125,41 @@ export default function EventDetailPage() {
             </Card>
           </section>
 
-          {/* Rules Card */}
-          <section>
-            <h2 className="text-3xl font-black uppercase mb-6 flex items-center gap-3">
-              <ScrollText className="w-8 h-8 text-neo-pink" strokeWidth={3} /> Tournament Rules
+          {/* Schedule Section */}
+          <section id="schedule">
+            <h2 className="text-4xl font-black uppercase mb-8 flex items-center gap-4">
+              <span className="w-12 h-12 bg-neo-yellow border-3 border-black flex items-center justify-center italic text-xl">2</span>
+              Match Schedule
             </h2>
-            <Card variant="white" className="p-8 border-2">
-              <ul className="space-y-4 font-bold">
-                <li className="flex gap-3"><CheckCircle className="w-6 h-6 text-neo-green shrink-0" /> Single elimination bracket format.</li>
-                <li className="flex gap-3"><CheckCircle className="w-6 h-6 text-neo-green shrink-0" /> All matches are Best of 3 (Bo3).</li>
-                <li className="flex gap-3"><CheckCircle className="w-6 h-6 text-neo-green shrink-0" /> Grand Finals will be Best of 5 (Bo5).</li>
-                <li className="flex gap-3"><CheckCircle className="w-6 h-6 text-neo-green shrink-0" /> Players must be at least 16 years old.</li>
-                <li className="flex gap-3"><CheckCircle className="w-6 h-6 text-neo-green shrink-0" /> Fair play and anti-cheat measures are strictly enforced.</li>
-              </ul>
-            </Card>
+            <div className="space-y-4">
+               {[
+                 { day: "Day 01", title: "Quarter Finals", time: "10:00 AM - 08:00 PM", status: "Completed" },
+                 { day: "Day 02", title: "Semi Finals", time: "11:00 AM - 04:00 PM", status: "Live" },
+                 { day: "Day 03", title: "Grand Finals", time: "01:00 PM - 06:00 PM", status: "Upcoming" },
+               ].map((item, i) => (
+                 <Card key={i} className={`p-6 border-3 flex flex-col md:flex-row justify-between items-center gap-4 ${item.status === 'Live' ? 'bg-neo-cyan/10 border-neo-cyan' : 'bg-white'}`}>
+                    <div className="flex items-center gap-6">
+                      <div className="bg-black text-white px-4 py-2 font-black uppercase text-xs">{item.day}</div>
+                      <div>
+                        <h4 className="font-black uppercase text-lg">{item.title}</h4>
+                        <p className="text-xs font-bold opacity-50 uppercase tracking-widest">{item.time}</p>
+                      </div>
+                    </div>
+                    <span className={`px-4 py-1 border-2 border-black text-[10px] font-black uppercase ${item.status === 'Live' ? 'bg-neo-cyan animate-pulse' : 'bg-neutral-100'}`}>
+                      {item.status}
+                    </span>
+                 </Card>
+               ))}
+            </div>
           </section>
 
-          {/* Bracket Section - DYNAMIC RENDERING */}
+          {/* Bracket Section */}
           <section id="bracket">
-            <h2 className="text-3xl font-black uppercase mb-6 flex items-center gap-3">
-              <Users className="w-8 h-8 text-neo-yellow" strokeWidth={3} /> Tournament Bracket
+            <h2 className="text-4xl font-black uppercase mb-8 flex items-center gap-4">
+              <span className="w-12 h-12 bg-neo-pink border-3 border-black flex items-center justify-center italic text-xl">3</span>
+              Live Brackets
             </h2>
-            <Card variant="white" className="p-0 overflow-hidden relative border-3">
-              <div className="bg-black text-white px-4 py-1 text-xs font-black uppercase inline-block absolute top-4 left-4 z-10">
-                Live Progress
-              </div>
+            <Card variant="white" className="p-0 overflow-hidden relative border-3 shadow-brutal">
               <Bracket rounds={MOCK_BRACKET} />
             </Card>
           </section>

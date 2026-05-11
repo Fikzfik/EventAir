@@ -9,12 +9,10 @@ import { cn } from "@/app/utils/cn";
 
 const NAV_LINKS = [
   { label: "Discover", href: "/events" },
-  { label: "Register", href: "/register" },
-  { label: "Submissions", href: "/submission" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Hall of Fame", href: "/hall-of-fame" },
   { label: "Organizer", href: "/organizer" },
   { label: "Docs", href: "/docs" },
-  // optional advanced feature
-  { label: "Bracket", href: "/bracket" },
 ];
 
 export const Navbar = () => {
@@ -27,20 +25,18 @@ export const Navbar = () => {
   useEffect(() => {
     // Entrance animation
     const ctx = gsap.context(() => {
-      gsap.from(logoRef.current, { y: -30, opacity: 0, duration: 0.6, ease: "power3.out" });
-      gsap.from(linksRef.current?.children ?? [], {
-        y: -20,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 0.5,
-        delay: 0.2,
-        ease: "power2.out",
+      gsap.from(navRef.current, { 
+        y: -100, 
+        opacity: 0, 
+        duration: 0.8, 
+        ease: "power3.out" 
       });
     }, navRef);
 
     // Scroll-aware background
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
     return () => {
       ctx.revert();
