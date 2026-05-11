@@ -8,10 +8,13 @@ import { Menu, X, Zap } from "lucide-react";
 import { cn } from "@/app/utils/cn";
 
 const NAV_LINKS = [
-  { label: "Events", href: "/events" },
-  { label: "Brackets", href: "#brackets" },
-  { label: "Hall of Fame", href: "/hall-of-fame" },
-  { label: "Chat", href: "/chat" },
+  { label: "Discover", href: "/events" },
+  { label: "Register", href: "/register" },
+  { label: "Submissions", href: "/submission" },
+  { label: "Organizer", href: "/organizer" },
+  { label: "Docs", href: "/docs" },
+  // optional advanced feature
+  { label: "Bracket", href: "/bracket" },
 ];
 
 export const Navbar = () => {
@@ -50,8 +53,8 @@ export const Navbar = () => {
       <nav
         ref={navRef}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-3 border-black",
-          scrolled ? "bg-white shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]" : "bg-white/90 backdrop-blur-sm"
+          "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 border-b-3 border-black",
+          scrolled ? "bg-white shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]" : "bg-white"
         )}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">

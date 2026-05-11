@@ -82,15 +82,15 @@ const Hero = () => {
         style={{ backgroundImage: "repeating-linear-gradient(0deg,#000 0,#000 1px,transparent 1px,transparent 40px),repeating-linear-gradient(90deg,#000 0,#000 1px,transparent 1px,transparent 40px)" }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center w-full">
         {/* Left */}
-        <div>
+        <div className="relative z-20">
           <div ref={badgeRef} className="inline-flex items-center gap-2 bg-black text-white px-4 py-1.5 border-2 border-black shadow-brutal-sm font-black uppercase text-xs tracking-widest mb-8">
             <Zap className="w-3 h-3 fill-neo-yellow text-neo-yellow" />
             Top Tier Tournament Platform
           </div>
 
-          <h1 ref={headingRef} className="text-[clamp(3.5rem,8vw,7rem)] font-black uppercase leading-[0.9] tracking-tighter mb-8 overflow-hidden">
+          <h1 ref={headingRef} className="text-[clamp(3.5rem,8vw,7rem)] font-black uppercase leading-[0.9] tracking-tighter mb-8">
             <span className="block">Play.</span>
             <span className="block">Compete.</span>
             <span className="block bg-neo-yellow px-3 border-4 border-black shadow-brutal w-fit mt-1">Conquer.</span>
