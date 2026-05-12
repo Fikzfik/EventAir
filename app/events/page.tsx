@@ -23,7 +23,15 @@ import { useEffect, useRef } from "react";
 
 export default function EventsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const filteredEvents = MOCK_EVENTS.filter(ev => {
+    const matchesCategory = activeCategory === "All" || ev.category === activeCategory;
+    const matchesSearch = ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         ev.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -36,7 +44,7 @@ export default function EventsPage() {
       });
     }, containerRef);
     return () => ctx.revert();
-  }, [activeCategory]);
+  }, [activeCategory, searchQuery]);
 
   return (
     <main ref={containerRef} className="min-h-screen bg-white">
@@ -55,6 +63,8 @@ export default function EventsPage() {
               <input 
                 type="text" 
                 placeholder="Search events, games, or organizers..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white border-3 border-black p-4 pl-12 font-bold shadow-brutal-sm focus:outline-none focus:shadow-brutal transition-all"
               />
             </div>
@@ -96,33 +106,39 @@ export default function EventsPage() {
         {/* Event Grid */}
         <div className="flex-grow">
           <div className="grid sm:grid-cols-2 gap-8">
-            {MOCK_EVENTS.map(ev => (
-              <Link href={`/events/${ev.id}`} key={ev.id} className="event-card group">
-                <Card className="p-0 overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-300">
-                  <div className="h-48 border-b-3 border-black overflow-hidden relative">
-                    <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    <div className="absolute top-2 left-2 bg-black text-white px-2 py-0.5 border-2 border-black font-black text-xs uppercase">
-                      {ev.category}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-2xl font-black uppercase mb-4 leading-none">{ev.title}</h3>
-                    <div className="space-y-2 mb-6">
-                      <div className="flex items-center gap-2 text-sm font-bold">
-                        <Calendar className="w-4 h-4 text-neo-pink" /> {ev.date}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-bold">
-                        <Trophy className="w-4 h-4 text-neo-yellow" /> {ev.prize}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-bold">
-                        <Users className="w-4 h-4 text-neo-cyan" /> {ev.teams} Teams
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map(ev => (
+                <Link href={`/events/${ev.id}`} key={ev.id} className="event-card group">
+                  <Card className="p-0 overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-300">
+                    <div className="h-48 border-b-3 border-black overflow-hidden relative">
+                      <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <div className="absolute top-2 left-2 bg-black text-white px-2 py-0.5 border-2 border-black font-black text-xs uppercase">
+                        {ev.category}
                       </div>
                     </div>
-                    <Button className="w-full justify-center">View Details</Button>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                    <div className="p-6">
+                      <h3 className="text-2xl font-black uppercase mb-4 leading-none">{ev.title}</h3>
+                      <div className="space-y-2 mb-6">
+                        <div className="flex items-center gap-2 text-sm font-bold">
+                          <Calendar className="w-4 h-4 text-neo-pink" /> {ev.date}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm font-bold">
+                          <Trophy className="w-4 h-4 text-neo-yellow" /> {ev.prize}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm font-bold">
+                          <Users className="w-4 h-4 text-neo-cyan" /> {ev.teams} Teams
+                        </div>
+                      </div>
+                      <Button className="w-full justify-center">View Details</Button>
+                    </div>
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-2 py-20 text-center">
+                <p className="text-2xl font-black uppercase opacity-20">No events found</p>
+              </div>
+            )}
           </div>
           
           {/* Pagination Placeholder */}

@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Trophy, Medal, Star, Crown, Users, ArrowUpRight } from "lucide-react";
 import { gsap } from "gsap";
+import Link from "next/link";
 
 export default function HallOfFamePage() {
   const containerRef = useRef<HTMLDivElement>(null);

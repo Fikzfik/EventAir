@@ -7,7 +7,8 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Bracket, Round } from "@/components/features/Bracket";
-import { Calendar, Users, Trophy, MapPin, Share2, Info, ScrollText, CheckCircle } from "lucide-react";
+import { Calendar, Users, Trophy, MapPin, Share2, Info, ScrollText, CheckCircle, X } from "lucide-react";
+import { useState } from "react";
 
 const MOCK_BRACKET: Round[] = [
   {
@@ -35,8 +36,15 @@ const MOCK_BRACKET: Round[] = [
 ];
 
 export default function EventDetailPage() {
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [isJoined, setIsJoined] = useState(false);
   const charRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleJoin = () => {
+    setIsJoined(true);
+    setShowJoinModal(false);
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -205,8 +213,45 @@ export default function EventDetailPage() {
                 <span>Oct 20, 2026</span>
               </div>
             </div>
-            <Button className="w-full mt-6 bg-black text-white">Join Tournament</Button>
+            <Button 
+              onClick={() => !isJoined && setShowJoinModal(true)} 
+              className={`w-full mt-6 text-white ${isJoined ? 'bg-neo-green text-black' : 'bg-black'}`}
+              disabled={isJoined}
+            >
+              {isJoined ? 'Joined!' : 'Join Tournament'}
+            </Button>
           </Card>
+
+          {/* Join Modal */}
+          {showJoinModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowJoinModal(false)} />
+              <Card className="relative z-10 w-full max-w-md p-8 border-4 animate-in fade-in zoom-in duration-300">
+                <button 
+                  onClick={() => setShowJoinModal(false)}
+                  className="absolute top-4 right-4 p-1 hover:bg-neutral-100 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+                <h3 className="text-3xl font-black uppercase mb-6 tracking-tighter">Team Registration</h3>
+                <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleJoin(); }}>
+                  <div>
+                    <label className="block text-xs font-black uppercase mb-2">Team Name</label>
+                    <input type="text" required placeholder="Enter team name" className="w-full border-3 border-black p-3 font-bold focus:outline-none focus:shadow-brutal transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black uppercase mb-2">Team Captain</label>
+                    <input type="text" required placeholder="Full name" className="w-full border-3 border-black p-3 font-bold focus:outline-none focus:shadow-brutal transition-all" />
+                  </div>
+                  <div className="flex items-center gap-3 py-2">
+                    <input type="checkbox" required className="w-5 h-5 border-3 border-black rounded-none appearance-none checked:bg-neo-pink transition-all cursor-pointer" />
+                    <span className="text-xs font-bold uppercase">I agree to the tournament rules</span>
+                  </div>
+                  <Button type="submit" className="w-full bg-neo-pink text-black text-lg py-6">Confirm Registration</Button>
+                </form>
+              </Card>
+            </div>
+          )}
 
           {/* Organizer Card */}
           <Card variant="white" className="p-6 border-2">

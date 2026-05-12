@@ -13,7 +13,8 @@ import {
   Award, 
   Star,
   Gamepad2,
-  ArrowRight
+  ArrowRight,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 

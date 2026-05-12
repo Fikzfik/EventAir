@@ -8,6 +8,28 @@ import { Send, Users, Hash, Plus, MessageSquare } from "lucide-react";
 
 export default function ChatPage() {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([
+    { sender: "Admin", text: "Welcome to EventAir chat! Be nice.", color: "bg-neo-yellow", time: "10:00" },
+    { sender: "Fikz", text: "Anyone for Valorant tonight?", color: "bg-neo-cyan", time: "10:05" },
+    { sender: "ProGamer", text: "I'm in! What's the lobby code?", color: "bg-neo-green", time: "10:06" },
+    { sender: "Ghost", text: "Good luck with the tournament guys!", color: "bg-neo-pink", time: "10:10" },
+  ]);
+
+  const handleSend = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!message.trim()) return;
+    
+    const now = new Date();
+    const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    setMessages([...messages, { 
+      sender: "You", 
+      text: message, 
+      color: "bg-neo-yellow", 
+      time: timeString 
+    }]);
+    setMessage("");
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -56,13 +78,8 @@ export default function ChatPage() {
 
           {/* Messages */}
           <div className="flex-grow p-6 overflow-y-auto bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] space-y-6">
-            {[
-              { sender: "Admin", text: "Welcome to EventAir chat! Be nice.", color: "bg-neo-yellow", time: "10:00" },
-              { sender: "Fikz", text: "Anyone for Valorant tonight?", color: "bg-neo-cyan", time: "10:05" },
-              { sender: "ProGamer", text: "I'm in! What's the lobby code?", color: "bg-neo-green", time: "10:06" },
-              { sender: "Ghost", text: "Good luck with the tournament guys!", color: "bg-neo-pink", time: "10:10" },
-            ].map((msg, i) => (
-              <div key={i} className={`flex flex-col ${msg.sender === 'Fikz' ? 'items-end' : 'items-start'}`}>
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex flex-col ${msg.sender === 'You' ? 'items-end' : 'items-start'}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[10px] font-black uppercase">{msg.sender}</span>
                   <span className="text-[9px] font-bold opacity-40">{msg.time}</span>
@@ -76,7 +93,7 @@ export default function ChatPage() {
 
           {/* Input Area */}
           <footer className="p-4 border-t-3 border-black bg-neutral-50">
-            <div className="flex gap-4">
+            <form onSubmit={handleSend} className="flex gap-4">
               <input 
                 type="text" 
                 value={message}
@@ -84,10 +101,10 @@ export default function ChatPage() {
                 placeholder="Type your message here..." 
                 className="flex-grow bg-white border-3 border-black p-4 font-bold shadow-brutal-sm focus:outline-none focus:shadow-brutal transition-all"
               />
-              <Button size="lg" className="aspect-square p-4 bg-neo-pink">
+              <Button type="submit" size="lg" className="aspect-square p-4 bg-neo-pink">
                 <Send className="w-6 h-6" />
               </Button>
-            </div>
+            </form>
           </footer>
         </section>
       </div>
