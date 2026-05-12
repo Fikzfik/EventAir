@@ -14,7 +14,7 @@ import {
   Star,
   Gamepad2,
   ArrowRight,
-  Users
+  Users as UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -119,7 +119,7 @@ export default function ParticipantDashboard() {
                         <Clock className="w-4 h-4" /> {event.nextMatch}
                       </div>
                       <div className="flex items-center gap-2 text-xs font-bold text-black/60 uppercase">
-                        <Users className="w-4 h-4" /> Team: Cyber Knights
+                        <UsersIcon className="w-4 h-4" /> Team: Cyber Knights
                       </div>
                     </div>
 
