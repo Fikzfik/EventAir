@@ -4,18 +4,18 @@ import { useState } from "react";
 import { Navbar } from "@/components/ui/Navbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Search, Filter, Calendar, Users, Trophy } from "lucide-react";
+import { Search, Filter, Calendar, Users, Trophy, DollarSign } from "lucide-react";
 import Link from "next/link";
 
 const CATEGORIES = ["All", "Esports", "Sports", "Music", "Tech"];
 
 const MOCK_EVENTS = [
-  { id: "1", title: "Valorant Pro Series", category: "Esports", prize: "$10,000", date: "Oct 24, 2026", teams: 128, image: "https://picsum.photos/seed/11/600/400" },
-  { id: "2", title: "Mobile Legends Cup", category: "Esports", prize: "$5,000", date: "Nov 12, 2026", teams: 64, image: "https://picsum.photos/seed/12/600/400" },
-  { id: "3", title: "FIFA Street Invitational", category: "Sports", prize: "$2,500", date: "Dec 05, 2026", teams: 32, image: "https://picsum.photos/seed/13/600/400" },
-  { id: "4", title: "Rock Blast Festival", category: "Music", prize: "N/A", date: "Jan 15, 2027", teams: 0, image: "https://picsum.photos/seed/14/600/400" },
-  { id: "5", title: "Global Dev Hackathon", category: "Tech", prize: "$50,000", date: "Feb 20, 2027", teams: 256, image: "https://picsum.photos/seed/15/600/400" },
-  { id: "6", title: "Street Basketball 3x3", category: "Sports", prize: "$1,000", date: "Mar 10, 2027", teams: 16, image: "https://picsum.photos/seed/16/600/400" },
+  { id: "1", title: "Valorant Pro Series", category: "Esports", prize: "$10,000", date: "Oct 24, 2026", teams: 128, image: "https://picsum.photos/seed/11/450/800" },
+  { id: "2", title: "Mobile Legends Cup", category: "Esports", prize: "$5,000", date: "Nov 12, 2026", teams: 64, image: "https://picsum.photos/seed/12/450/800" },
+  { id: "3", title: "FIFA Street Invitational", category: "Sports", prize: "$2,500", date: "Dec 05, 2026", teams: 32, image: "https://picsum.photos/seed/13/450/800" },
+  { id: "4", title: "Rock Blast Festival", category: "Music", prize: "N/A", date: "Jan 15, 2027", teams: 0, image: "https://picsum.photos/seed/14/450/800" },
+  { id: "5", title: "Global Dev Hackathon", category: "Tech", prize: "$50,000", date: "Feb 20, 2027", teams: 256, image: "https://picsum.photos/seed/15/450/800" },
+  { id: "6", title: "Street Basketball 3x3", category: "Sports", prize: "$1,000", date: "Mar 10, 2027", teams: 16, image: "https://picsum.photos/seed/16/450/800" },
 ];
 
 import { gsap } from "gsap";
@@ -25,8 +25,18 @@ export default function EventsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [customEvents, setCustomEvents] = useState<any[]>([]);
 
-  const filteredEvents = MOCK_EVENTS.filter(ev => {
+  useEffect(() => {
+    const saved = localStorage.getItem("custom_events");
+    if (saved) {
+      setCustomEvents(JSON.parse(saved));
+    }
+  }, []);
+
+  const allEvents = [...customEvents, ...MOCK_EVENTS];
+
+  const filteredEvents = allEvents.filter(ev => {
     const matchesCategory = activeCategory === "All" || ev.category === activeCategory;
     const matchesSearch = ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          ev.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -105,12 +115,12 @@ export default function EventsPage() {
 
         {/* Event Grid */}
         <div className="flex-grow">
-          <div className="grid sm:grid-cols-2 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredEvents.length > 0 ? (
               filteredEvents.map(ev => (
                 <Link href={`/events/${ev.id}`} key={ev.id} className="event-card group">
-                  <Card className="p-0 overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-300">
-                    <div className="h-48 border-b-3 border-black overflow-hidden relative">
+                  <Card className="p-0 overflow-hidden group-hover:-translate-y-2 group-hover:shadow-[8px_8px_0px_0px_black] transition-all duration-300 flex flex-col h-full">
+                    <div className="aspect-[9/16] border-b-3 border-black overflow-hidden relative">
                       <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       <div className="absolute top-2 left-2 bg-black text-white px-2 py-0.5 border-2 border-black font-black text-xs uppercase">
                         {ev.category}
@@ -120,14 +130,19 @@ export default function EventsPage() {
                       <h3 className="text-2xl font-black uppercase mb-4 leading-none">{ev.title}</h3>
                       <div className="space-y-2 mb-6">
                         <div className="flex items-center gap-2 text-sm font-bold">
-                          <Calendar className="w-4 h-4 text-neo-pink" /> {ev.date}
+                          <Calendar className="w-4 h-4 text-neo-pink" /> {ev.date || ev.startDate}
                         </div>
                         <div className="flex items-center gap-2 text-sm font-bold">
-                          <Trophy className="w-4 h-4 text-neo-yellow" /> {ev.prize}
+                          <Trophy className="w-4 h-4 text-neo-yellow" /> {ev.prize || ev.prizePool || "TBA"}
                         </div>
                         <div className="flex items-center gap-2 text-sm font-bold">
-                          <Users className="w-4 h-4 text-neo-cyan" /> {ev.teams} Teams
+                          <Users className="w-4 h-4 text-neo-cyan" /> {ev.teams ?? ev.maxTeams ?? 0} Teams
                         </div>
+                        {ev.registrationFee > 0 && (
+                          <div className="flex items-center gap-2 text-sm font-bold text-neo-green">
+                            <DollarSign className="w-4 h-4" /> Rp {ev.registrationFee.toLocaleString()}
+                          </div>
+                        )}
                       </div>
                       <Button className="w-full justify-center">View Details</Button>
                     </div>

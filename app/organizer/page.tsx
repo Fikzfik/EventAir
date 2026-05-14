@@ -4,6 +4,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Users, FileText, Settings, BarChart3, Plus, Search, Filter, MoreVertical, Edit2, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export default function OrganizerDashboard() {
   return (
@@ -16,9 +17,11 @@ export default function OrganizerDashboard() {
             <h1 className="text-5xl font-black uppercase tracking-tighter">Organizer <span className="text-neo-pink">Hub</span></h1>
             <p className="font-bold text-black/60 uppercase text-xs tracking-widest mt-2">Managing EventAir Pro • Admin Access</p>
           </div>
-          <Button size="lg" className="bg-neo-green flex items-center gap-2">
-            <Plus className="w-6 h-6" strokeWidth={3} /> Create New Event
-          </Button>
+          <Link href="/organizer/create">
+            <Button size="lg" className="bg-neo-green flex items-center gap-2">
+              <Plus className="w-6 h-6" strokeWidth={3} /> Create New Event
+            </Button>
+          </Link>
         </header>
 
         {/* Quick Stats */}

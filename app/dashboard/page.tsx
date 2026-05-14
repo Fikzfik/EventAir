@@ -88,9 +88,14 @@ export default function ParticipantDashboard() {
               <div className="relative z-10">
                 <h2 className="text-4xl font-black uppercase tracking-tighter mb-2">Welcome Back, Champ!</h2>
                 <p className="font-bold text-black/70 max-w-lg mb-6">You have 2 upcoming matches this week. Don't forget to check the rules and schedules.</p>
-                <Link href="/events">
-                   <Button className="bg-black text-white hover:bg-black/90">Browse More Events</Button>
-                </Link>
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <Link href="/events">
+                     <Button className="bg-black text-white hover:bg-black/90">Browse More Events</Button>
+                  </Link>
+                  <Link href="/organizer">
+                     <Button variant="outline" className="bg-white hover:bg-neo-yellow">Create Your Event</Button>
+                  </Link>
+                </div>
               </div>
               <Trophy className="absolute -right-8 -bottom-8 w-48 h-48 opacity-10 rotate-12 group-hover:rotate-6 transition-transform duration-500" />
             </div>

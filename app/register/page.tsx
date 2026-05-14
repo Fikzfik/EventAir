@@ -4,147 +4,141 @@ import { useState } from "react";
 import { Navbar } from "@/components/ui/Navbar";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { CheckCircle, ArrowRight, User, Mail, Users, FileText } from "lucide-react";
+import { User, Users, Trophy, ShieldCheck, Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { gsap } from "gsap";
+import { useEffect, useRef } from "react";
+
+type Role = "participant" | "organizer";
 
 export default function RegisterPage() {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    event: "",
-    teamSize: "1",
-  });
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const nextStep = () => setStep(step + 1);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Entrance for form items
+      gsap.from(".anim-item", {
+        y: 20,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.6,
+        ease: "power2.out"
+      });
+
+      // Floating background shapes
+      gsap.to(".floating-shape", {
+        x: "random(-100, 100)",
+        y: "random(-100, 100)",
+        rotate: "random(-180, 180)",
+        duration: "random(10, 20)",
+        repeat: -1,
+        yoyo: true,
+        ease: "none",
+        stagger: {
+          each: 2,
+          from: "random"
+        }
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main ref={containerRef} className="min-h-screen bg-neo-cyan/10 selection:bg-neo-pink selection:text-white relative overflow-hidden">
+      {/* Background Animated Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-0 opacity-20">
+        <div className="floating-shape absolute top-20 left-[10%] w-32 h-32 border-4 border-black bg-neo-yellow" />
+        <div className="floating-shape absolute top-[60%] left-[5%] w-20 h-20 border-4 border-black bg-neo-pink rounded-full" />
+        <div className="floating-shape absolute top-[10%] right-[15%] w-40 h-40 border-4 border-black bg-neo-cyan rotate-12" />
+        <div className="floating-shape absolute top-[70%] right-[10%] w-24 h-24 border-4 border-black bg-neo-green rotate-45" />
+        <div className="floating-shape absolute bottom-[15%] left-[30%] w-16 h-16 border-4 border-black bg-neo-orange" />
+        
+        {/* Animated Grid lines */}
+        <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '100px 100px' }} />
+      </div>
+
       <Navbar />
       
-      <div className="max-w-3xl mx-auto px-6 py-20">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-black uppercase tracking-tighter mb-4">
-            Event <span className="text-neo-pink underline">Registration</span>
+      <div className="max-w-4xl mx-auto px-6 py-20 flex flex-col items-center relative z-10">
+        <header className="text-center mb-12 anim-item">
+          <div className="inline-block bg-black text-white px-4 py-1 border-2 border-black mb-4 font-black uppercase text-xs tracking-widest shadow-brutal-sm">
+            Join the Community
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">
+            Create <span className="text-neo-pink underline decoration-8 decoration-black">Account</span>
           </h1>
           <p className="font-bold text-black/60 uppercase tracking-widest text-sm">
-            Join the competition in 3 easy steps
+            Start your journey in the elite event arena
           </p>
         </header>
 
-        {/* Step Progress */}
-        <div className="flex justify-between mb-12 relative">
-          <div className="absolute top-1/2 left-0 w-full h-1 bg-black -translate-y-1/2 -z-10" />
-          {[1, 2, 3].map((s) => (
-            <div 
-              key={s}
-              className={`w-12 h-12 border-3 border-black flex items-center justify-center font-black text-xl transition-all ${step >= s ? 'bg-neo-yellow' : 'bg-white'}`}
-            >
-              {step > s ? <CheckCircle className="w-6 h-6" /> : s}
-            </div>
-          ))}
-        </div>
-
-        <Card className="p-8 md:p-12 border-4 bg-white relative overflow-hidden">
-          {step === 1 && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-              <h2 className="text-3xl font-black uppercase flex items-center gap-3">
-                <User className="w-8 h-8 text-neo-cyan" /> Personal Info
-              </h2>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="font-black uppercase text-xs tracking-widest">Full Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="John Doe"
-                    className="w-full bg-white border-3 border-black p-4 font-bold shadow-brutal-sm focus:outline-none focus:shadow-brutal transition-all"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-black uppercase text-xs tracking-widest">Email Address</label>
-                  <input 
-                    type="email" 
-                    placeholder="john@example.com"
-                    className="w-full bg-white border-3 border-black p-4 font-bold shadow-brutal-sm focus:outline-none focus:shadow-brutal transition-all"
-                  />
-                </div>
-              </div>
-              <Button onClick={nextStep} size="lg" className="w-full justify-center gap-2">
-                Continue <ArrowRight className="w-5 h-5" />
-              </Button>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-              <h2 className="text-3xl font-black uppercase flex items-center gap-3">
-                <Users className="w-8 h-8 text-neo-pink" /> Competition Details
-              </h2>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="font-black uppercase text-xs tracking-widest">Select Event</label>
-                  <select className="w-full bg-white border-3 border-black p-4 font-bold shadow-brutal-sm focus:outline-none focus:shadow-brutal transition-all appearance-none cursor-pointer">
-                    <option>Valorant Pro Series</option>
-                    <option>Mobile Legends Cup</option>
-                    <option>Global Dev Hackathon</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="font-black uppercase text-xs tracking-widest">Team Size</label>
-                  <div className="grid grid-cols-3 gap-4">
-                    {["Solo", "Duo", "Squad"].map((size) => (
-                      <button 
-                        key={size}
-                        className="p-4 border-3 border-black font-black uppercase text-xs hover:bg-neo-yellow transition-all shadow-brutal-sm active:translate-y-1 active:shadow-none"
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <Button variant="outline" onClick={() => setStep(1)} size="lg" className="flex-1 justify-center">Back</Button>
-                <Button onClick={nextStep} size="lg" className="flex-2 justify-center gap-2">
-                  Continue <ArrowRight className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-8 text-center animate-in fade-in slide-in-from-right-4 duration-500">
-              <div className="w-20 h-20 bg-neo-green border-4 border-black mx-auto flex items-center justify-center">
-                <CheckCircle className="w-12 h-12" />
+        <div className="w-full max-w-lg anim-item">
+          <Card className="border-4 p-8 md:p-12 bg-white relative overflow-hidden">
+            {/* Decorative background accent */}
+            <div className="absolute -top-10 -left-10 w-32 h-32 bg-neo-pink/10 rounded-full blur-2xl" />
+            
+            <div className="flex items-center gap-4 mb-10 relative z-10">
+              <div className="w-12 h-12 bg-neo-yellow border-3 border-black flex items-center justify-center">
+                <User className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-4xl font-black uppercase mb-2">Ready to Roll!</h2>
-                <p className="font-bold text-black/60">Please review your information before submitting.</p>
-              </div>
-              
-              <Card variant="white" className="text-left p-6 border-2 space-y-2 font-bold">
-                <div className="flex justify-between border-b-2 border-black/10 pb-2">
-                  <span className="opacity-50">Event:</span>
-                  <span>Valorant Pro Series</span>
-                </div>
-                <div className="flex justify-between border-b-2 border-black/10 pb-2">
-                  <span className="opacity-50">Participant:</span>
-                  <span>John Doe</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="opacity-50">Type:</span>
-                  <span>Squad (5 Players)</span>
-                </div>
-              </Card>
-
-              <div className="flex gap-4">
-                <Button variant="outline" onClick={() => setStep(2)} size="lg" className="flex-1 justify-center">Back</Button>
-                <Button onClick={() => window.location.href = '/dashboard'} size="lg" className="flex-2 justify-center bg-neo-green">
-                  Confirm & Register
-                </Button>
+                <h2 className="text-3xl font-black uppercase leading-none">Sign Up</h2>
+                <p className="font-bold uppercase text-xs text-black/40">Free forever for all users</p>
               </div>
             </div>
-          )}
-        </Card>
+
+            <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
+              <div className="space-y-2">
+                <label className="font-black uppercase text-xs tracking-widest">Full Name</label>
+                <div className="relative">
+                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black/30" />
+                   <input 
+                    type="text" 
+                    placeholder="John Doe"
+                    className="w-full bg-neutral-50 border-3 border-black p-4 pl-12 font-bold focus:outline-none focus:bg-white focus:shadow-brutal-sm transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-black uppercase text-xs tracking-widest">Email Address</label>
+                <div className="relative">
+                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black/30" />
+                   <input 
+                    type="email" 
+                    placeholder="you@example.com"
+                    className="w-full bg-neutral-50 border-3 border-black p-4 pl-12 font-bold focus:outline-none focus:bg-white focus:shadow-brutal-sm transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-black uppercase text-xs tracking-widest">Password</label>
+                <div className="relative">
+                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black/30" />
+                   <input 
+                    type="password" 
+                    placeholder="••••••••"
+                    className="w-full bg-neutral-50 border-3 border-black p-4 pl-12 font-bold focus:outline-none focus:bg-white focus:shadow-brutal-sm transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <Button size="lg" className="w-full justify-center gap-2 group">
+                  Create Account
+                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </div>
+            </form>
+
+            <div className="mt-10 pt-8 border-t-2 border-black/5 text-center relative z-10">
+               <p className="font-bold text-sm text-black/40 uppercase">
+                 Already have an account? <Link href="/login" className="text-black hover:text-neo-pink underline decoration-2">Login Here</Link>
+               </p>
+            </div>
+          </Card>
+        </div>
       </div>
     </main>
   );

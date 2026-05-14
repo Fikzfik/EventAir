@@ -10,8 +10,8 @@ import { cn } from "@/app/utils/cn";
 const NAV_LINKS = [
   { label: "Discover", href: "/events" },
   { label: "Dashboard", href: "/dashboard" },
+  { label: "Create Event", href: "/organizer" },
   { label: "Hall of Fame", href: "/hall-of-fame" },
-  { label: "Organizer", href: "/organizer" },
   { label: "Docs", href: "/docs" },
 ];
 
@@ -49,7 +49,7 @@ export const Navbar = () => {
       <nav
         ref={navRef}
         className={cn(
-          "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 border-b-3 border-black",
+          "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 border-b-3 border-black text-black",
           scrolled ? "bg-white shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]" : "bg-white"
         )}
       >
@@ -71,11 +71,15 @@ export const Navbar = () => {
               </Link>
             ))}
             <div className="ml-4 flex gap-2">
-              <Button variant="outline" size="sm">Login</Button>
-              <Button variant="primary" size="sm" className="flex items-center gap-1">
-                <Zap className="w-3 h-3 fill-black" />
-                Register
-              </Button>
+              <Link href="/login">
+                <Button variant="outline" size="sm">Login</Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="primary" size="sm" className="flex items-center gap-1">
+                  <Zap className="w-3 h-3 fill-black" />
+                  Register
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -103,8 +107,12 @@ export const Navbar = () => {
               </Link>
             ))}
             <div className="p-4 flex gap-3">
-              <Button variant="outline" size="sm" className="flex-1 justify-center">Login</Button>
-              <Button variant="primary" size="sm" className="flex-1 justify-center">Register</Button>
+              <Link href="/login" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full justify-center">Login</Button>
+              </Link>
+              <Link href="/register" className="flex-1">
+                <Button variant="primary" size="sm" className="w-full justify-center">Register</Button>
+              </Link>
             </div>
           </div>
         )}

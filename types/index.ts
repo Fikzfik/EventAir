@@ -8,6 +8,18 @@ export interface User {
   avatarUrl?: string;
 }
 
+export interface Prize {
+  id: string;
+  rank: string;
+  reward: string;
+}
+
+export interface RundownItem {
+  id: string;
+  label: string;
+  date: string;
+}
+
 export interface Event {
   id: string;
   slug: string;
@@ -23,6 +35,13 @@ export interface Event {
   currentTeams: number;
   status: "open" | "ongoing" | "completed";
   organizerId: string;
+  registrationFee: number;
+  earlyBirdPrice?: number;
+  earlyBirdQuota?: number;
+  registrationDeadline: string;
+  tmDate?: string;
+  prizes: Prize[];
+  rundown: RundownItem[];
 }
 
 export interface Team {
